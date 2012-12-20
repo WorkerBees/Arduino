@@ -1,6 +1,5 @@
 app/bin/
 app/pde.jar
-build/macosx/work/
 core/bin/
 core/core.jar
 hardware/arduino/bootloaders/caterina_LUFA/Descriptors.o
@@ -13,8 +12,6 @@ hardware/arduino/bootloaders/caterina_LUFA/Caterina.lss
 hardware/arduino/bootloaders/caterina_LUFA/Caterina.elf
 hardware/arduino/bootloaders/caterina_LUFA/Caterina.eep
 hardware/arduino/bootloaders/caterina_LUFA/.dep/
-build/windows/work/
-build/linux/work/
 build/linux/dist/*.tar.gz
 build/linux/*.tgz
 test-bin
@@ -22,3 +19,5 @@ test-bin
 build/windows/launch4j-*
 build/windows/launcher/launch4j
 build/windows/WinAVR-*.zip
+build/*/work
+Resources_*.properties

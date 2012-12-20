@@ -97,6 +97,7 @@ public class Editor extends JFrame implements RunnerListener {
   // actually used are determined by the preferences, which are shared)
   static JMenu boardsMenu;
   static JMenu serialMenu;
+  static JMenu halBoardsMenu;
 
   static SerialMenuListener serialMenuListener;
   static SerialMonitor serialMonitor;
@@ -476,6 +477,7 @@ public class Editor extends JFrame implements RunnerListener {
     menubar.add(buildEditMenu());
     menubar.add(buildSketchMenu());
     menubar.add(buildToolsMenu());
+    menubar.add(buildArduPilotMenu());
     menubar.add(buildHelpMenu());
     setJMenuBar(menubar);
   }
@@ -997,6 +999,20 @@ public class Editor extends JFrame implements RunnerListener {
     //serialMenu.add(item);
   }
 
+  protected JMenu buildArduPilotMenu() {
+    // To deal with a Mac OS X 10.5 bug, add an extra space after the name
+    // so that the OS doesn't try to insert its slow help menu.
+    JMenu menu = new JMenu(_("ArduPilot"));
+    JMenuItem item;
+
+    if (halBoardsMenu == null) {
+        halBoardsMenu = new JMenu(_("HAL Board"));
+        base.rebuildHalBoardsMenu(halBoardsMenu);
+    }
+    menu.add(halBoardsMenu);
+
+    return menu;
+  }
 
   protected JMenu buildHelpMenu() {
     // To deal with a Mac OS X 10.5 bug, add an extra space after the name

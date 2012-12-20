@@ -118,8 +118,15 @@ public class Compiler implements MessageConsumer {
 
    sketch.setCompilingProgress(20);
    List includePaths = new ArrayList();
-   includePaths.add(corePath);
-   if (variantPath != null) includePaths.add(variantPath);
+
+   /** support possible ardupilot coreless build  */
+    if (!Base.ardupilotConfig.excludeCore()) {
+       includePaths.add(corePath);
+       if (variantPath != null) includePaths.add(variantPath);
+    } else {
+        System.out.println("Excluding arduino core from include paths");
+    }
+
    for (File libFolder : sketch.getImportedLibraries()) {
      // Forward compatibility with 1.5 library format
      File propertiesFile = new File(libFolder, "library.properties");
@@ -234,7 +241,12 @@ public class Compiler implements MessageConsumer {
       baseCommandLinker.add(file.getAbsolutePath());
     }
 
-    baseCommandLinker.add(runtimeLibraryName);
+   /** support possible ardupilot coreless build  */
+    if (!Base.ardupilotConfig.excludeCore()) {
+        baseCommandLinker.add(runtimeLibraryName);
+    } else {
+        System.out.println("Excluding arduino core from link");
+    }
     baseCommandLinker.add("-L" + buildPath);
     baseCommandLinker.add("-lm");
 
@@ -609,8 +621,12 @@ public class Compiler implements MessageConsumer {
       "-DF_CPU=" + boardPreferences.get("build.f_cpu"),      
       "-DARDUINO=" + Base.REVISION,
       "-DUSB_VID=" + boardPreferences.get("build.vid"),
-      "-DUSB_PID=" + boardPreferences.get("build.pid"),
+      "-DUSB_PID=" + boardPreferences.get("build.pid")
     }));
+
+    for (String flag : Base.ardupilotConfig.getFlags()) {
+      baseCommandCompiler.add(flag);
+    }
 
     for (int i = 0; i < includePaths.size(); i++) {
       baseCommandCompiler.add("-I" + (String) includePaths.get(i));
@@ -642,6 +658,10 @@ public class Compiler implements MessageConsumer {
       "-DARDUINO=" + Base.REVISION, 
     }));
 		
+    for (String flag : Base.ardupilotConfig.getFlags()) {
+      baseCommandCompiler.add(flag);
+    }
+
     for (int i = 0; i < includePaths.size(); i++) {
       baseCommandCompiler.add("-I" + (String) includePaths.get(i));
     }
@@ -674,6 +694,10 @@ public class Compiler implements MessageConsumer {
       "-DUSB_PID=" + boardPreferences.get("build.pid"),      
       "-DARDUINO=" + Base.REVISION,
     }));
+		
+    for (String flag : Base.ardupilotConfig.getFlags()) {
+      baseCommandCompilerCPP.add(flag);
+    }
 
     for (int i = 0; i < includePaths.size(); i++) {
       baseCommandCompilerCPP.add("-I" + (String) includePaths.get(i));
@@ -708,7 +732,7 @@ public class Compiler implements MessageConsumer {
       }
     };
     File libFolder = new File(path);
-
+    
     // Forward compatibility with 1.5 library format
     File propertiesFile = new File(libFolder, "library.properties");
     File srcFolder = new File(libFolder, "src");
@@ -719,7 +743,7 @@ public class Compiler implements MessageConsumer {
     } else {
       // Fallback to 1.0 library layout
       list = libFolder.list(onlyHFiles);
-    }
+  }
     if (list == null) {
       throw new IOException();
     }

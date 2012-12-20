@@ -38,6 +38,7 @@ import processing.app.tools.ZipDeflater;
 import processing.core.*;
 import static processing.app.I18n._;
 
+import processing.app.ardupilot.*;
 
 /**
  * The base class for the main processing application.
@@ -95,6 +96,8 @@ public class Base {
   static public String librariesClassPath;
   
   static public HashMap<String, Target> targetsTable;
+
+  static public APConfig ardupilotConfig;
 
   // Location for untitled items
   static File untitledFolder;
@@ -281,7 +284,9 @@ public class Base {
     targetsTable = new HashMap<String, Target>();
     loadHardware(getHardwareFolder());
     loadHardware(getSketchbookHardwareFolder());
-
+    
+    ardupilotConfig = new APConfig();
+        
     // Check if there were previously opened sketches to be restored
     boolean opened = restoreSketches();
 
@@ -1074,6 +1079,31 @@ public class Base {
   }
 
 
+  public void rebuildHalBoardsMenu(JMenu menu) {
+    System.out.println("rebuilding hal config menu");
+    menu.removeAll();      
+    ButtonGroup group = new ButtonGroup();
+    for (String halName : ardupilotConfig.halBoardsTable.keySet()) {
+        APHal hal = ardupilotConfig.halBoardsTable.get(halName);
+        AbstractAction action =
+          new AbstractAction( hal.description ) {
+            public void actionPerformed(ActionEvent actionevent) {
+              ardupilotConfig.setBoard( (String) getValue("halName") );
+            }
+          };
+        /* lambda the ultimate ah fuck it, put a coin in the jar */
+        action.putValue("halName", halName);
+        JMenuItem item = new JRadioButtonMenuItem(action);
+        if (Preferences.get("ardupilot.hal") == null) {
+            Preferences.set("ardupilot.hal", "none");
+        }
+        if (Preferences.get("ardupilot.hal").equals(halName)) {
+          item.setSelected(true);
+        }
+        group.add(item);
+        menu.add(item);
+    }
+  }
   /**
    * Scan a folder recursively, and add any sketches found to the menu
    * specified. Set the openReplaces parameter to true when opening the sketch
