@@ -28,7 +28,7 @@ import processing.app.Preferences;
 
 public class APConfig {
     public HashMap<String, APHal> halBoardsTable;
-    public String boardName;
+    public String halName;
 
     public APConfig () {
         /* We initialize the board table the same every time, I
@@ -48,7 +48,7 @@ public class APConfig {
 
     private void createBoardTable() {
         halBoardsTable = new HashMap<String, APHal>();
-        /** none is a special case - pass null as configFlag and boardName.
+        /** none is a special case - pass null as configFlag and halName.
          * I need a placholder to just show "None" for a menuitem without
          * getting too crazy.
          */
@@ -73,7 +73,7 @@ public class APConfig {
     }
 
     public APHal getBoard() {
-        return halBoardsTable.get(boardName);
+        return halBoardsTable.get(halName);
     }
 
     public void setBoard(String name) {
@@ -82,8 +82,12 @@ public class APConfig {
                     "already built this sketch, you will need to restart the " +
                     "Arduino IDE in order to build correctly with the new " +
                     "settings.");
-            boardName = name;
+            APHal hal = halBoardsTable.get(name);
+            halName = name;
             Preferences.set("ardupilot.hal", name);
+            if (hal.boardName != null) {
+                Preferences.set("board", hal.boardName);
+            }   
         }
     }
 
