@@ -124,6 +124,8 @@ public class Compiler implements MessageConsumer {
        includePaths.add(corePath);
        if (variantPath != null) includePaths.add(variantPath);
     } else {
+        System.out.println("Building for " +
+                Base.ardupilotConfig.getBoard().description);
         System.out.println("Excluding arduino core from include paths");
     }
 
@@ -233,6 +235,7 @@ public class Compiler implements MessageConsumer {
       "-Os",
       "-Wl,--gc-sections"+optRelax,
       "-mmcu=" + boardPreferences.get("build.mcu"),
+      Base.ardupilotConfig.excludeCore() ? "-mcall-prologues" : "",
       "-o",
       buildPath + File.separator + primaryClassName + ".elf"
     }));
