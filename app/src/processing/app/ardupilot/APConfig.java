@@ -70,6 +70,10 @@ public class APConfig {
                 new APHal("HAL_BOARD_APM2",
                           "ArduPilot Mega 2.x",
                           "mega2560"));
+        halBoardsTable.put("mpng",
+                new APHal("HAL_BOARD_MPNG",
+                          "MegaPirate NG",
+                          "mega2560"));
     }
 
     public APHal getBoard() {
@@ -87,7 +91,7 @@ public class APConfig {
             Preferences.set("ardupilot.hal", name);
             if (hal.boardName != null) {
                 Preferences.set("board", hal.boardName);
-            }   
+            }
         }
     }
 
@@ -95,7 +99,7 @@ public class APConfig {
         /* hack */
         if (getBoard().configFlag != null) return true;
         else return false;
-    }   
+    }
 
     public List<String> getFlags() {
         APHal board = getBoard();
